@@ -22,6 +22,11 @@ type Stats      = {
   median_duration_seconds: number; countries: number; triangle_count: number
 }
 
+// ── Advanced analytics types ───────────────────────────────────────────
+type BiasRow      = { year: number; raw_count: number; internet_pct: number; bias_corrected: number }
+type PerCapitaRow = { state: string; count: number; pop_millions: number; per_100k: number; rank_per_capita: number }
+type KeyQuestion  = { q: string; a: string; stat: string; stat_label: string; source: string; color: string }
+
 // ── Extracted intelligence types ───────────────────────────────────────
 type SoundRow     = { sound: string; count: number }
 type MovementRow  = { movement: string; count: number }
@@ -129,6 +134,12 @@ export default function ResearchDashboard() {
   const [stats,     setStats]     = useState<Stats | null>(null)
   const [loading,   setLoading]   = useState(true)
 
+  // Advanced analytics state
+  const [biasData,    setBiasData]    = useState<BiasRow[]>([])
+  const [perCapita,   setPerCapita]   = useState<PerCapitaRow[]>([])
+  const [keyQs,       setKeyQs]       = useState<KeyQuestion[]>([])
+  const [showBias,    setShowBias]    = useState(false)
+
   // Extracted intelligence state
   const [extSound,      setExtSound]      = useState<SoundRow[]>([])
   const [extMovement,   setExtMovement]   = useState<MovementRow[]>([])
@@ -181,9 +192,23 @@ export default function ResearchDashboard() {
     ).catch(() => setExtLoading(false))
   }, [])
 
-  // Year chart: all shapes → real year-by-year data; specific shape → decade breakdown for that shape
+  useEffect(() => {
+    Promise.all([
+      fetch("/data/nuforc_bias_corrected.json").then(r => r.json()),
+      fetch("/data/nuforc_per_capita.json").then(r => r.json()),
+      fetch("/data/derived_key_questions.json").then(r => r.json()),
+    ]).then(([bias, pc, kq]) => {
+      setBiasData(bias); setPerCapita(pc); setKeyQs(kq)
+    }).catch(() => {})
+  }, [])
+
+  // Year chart: raw or bias-corrected
   const filteredYear = activeShape === "All"
-    ? byYear.filter(r => r.year >= yearRange[0] && r.year <= yearRange[1])
+    ? (showBias
+        ? biasData
+            .filter(r => r.year >= yearRange[0] && r.year <= yearRange[1])
+            .map(r => ({ year: r.year, count: r.bias_corrected, raw: r.raw_count }))
+        : byYear.filter(r => r.year >= yearRange[0] && r.year <= yearRange[1]))
     : byDecade
         .filter(d => {
           const decade = parseInt(d.decade)
@@ -294,22 +319,35 @@ export default function ResearchDashboard() {
 
       {/* ── CHART 1: SIGHTINGS BY YEAR ───────────────────────────── */}
       <div style={{ marginBottom:56 }}>
-        <SectionTitle
-          icon={<TrendingUp style={{ width:14, height:14 }} />}
-          title="SIGHTINGS OVER TIME"
-          sub={
-            activeShape === "All"
-              ? `${filteredYear.reduce((a,r)=>a+r.count,0).toLocaleString()} sightings from ${yearRange[0]} to ${yearRange[1]} · Drag sliders above to filter`
-              : `Showing "${activeShape}" reports by decade · ${filteredYear.reduce((a,r)=>a+r.count,0).toLocaleString()} total matched`
-          }
-        />
+        <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:24, flexWrap:"wrap", gap:12 }}>
+          <SectionTitle
+            icon={<TrendingUp style={{ width:14, height:14 }} />}
+            title="SIGHTINGS OVER TIME"
+            sub={
+              activeShape === "All"
+                ? `${filteredYear.reduce((a,r)=>a+r.count,0).toLocaleString()} ${showBias ? "bias-corrected" : "raw"} sightings · ${yearRange[0]}–${yearRange[1]}`
+                : `Showing "${activeShape}" by decade · ${filteredYear.reduce((a,r)=>a+r.count,0).toLocaleString()} matched`
+            }
+          />
+          {activeShape === "All" && (
+            <button onClick={() => setShowBias(v => !v)} style={{
+              padding:"5px 12px", borderRadius:5, fontSize:9, cursor:"pointer",
+              border:`1px solid ${showBias ? AMBER+"60" : "rgba(6,182,212,0.3)"}`,
+              background: showBias ? "rgba(245,158,11,0.12)" : "rgba(6,182,212,0.06)",
+              color: showBias ? AMBER : CYAN,
+              letterSpacing:"0.12em", flexShrink:0,
+            }}>
+              {showBias ? "▶ BIAS-CORRECTED" : "▶ RAW COUNT"} (toggle)
+            </button>
+          )}
+        </div>
         <div style={{ background:"rgba(10,22,40,0.6)", border:"1px solid rgba(6,182,212,0.12)", borderRadius:12, padding:"24px 16px 12px" }}>
           <ResponsiveContainer width="100%" height={280}>
             <AreaChart data={filteredYear} margin={{ left:0, right:0, top:4, bottom:0 }}>
               <defs>
                 <linearGradient id="yearGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%"  stopColor={CYAN} stopOpacity={0.3} />
-                  <stop offset="95%" stopColor={CYAN} stopOpacity={0} />
+                  <stop offset="5%"  stopColor={showBias ? AMBER : CYAN} stopOpacity={0.3} />
+                  <stop offset="95%" stopColor={showBias ? AMBER : CYAN} stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(6,182,212,0.07)" />
@@ -318,14 +356,16 @@ export default function ResearchDashboard() {
               <YAxis tick={{ fontSize:10, fill:"#64748b" }} tickLine={false} axisLine={false}
                 tickFormatter={v => v >= 1000 ? `${(v/1000).toFixed(0)}k` : v} width={36} />
               <Tooltip content={<CustomTooltip />} />
-              <Area type="monotone" dataKey="count" name={activeShape === "All" ? "Sightings" : activeShape}
-                stroke={activeShape === "All" ? CYAN : SHAPE_COLORS[activeShape] || CYAN}
+              <Area type="monotone" dataKey="count" name={showBias ? "Bias-corrected" : (activeShape === "All" ? "Sightings" : activeShape)}
+                stroke={showBias ? AMBER : (activeShape === "All" ? CYAN : SHAPE_COLORS[activeShape] || CYAN)}
                 strokeWidth={2} fill="url(#yearGrad)" dot={activeShape !== "All"}
-                activeDot={{ r:4, fill: activeShape === "All" ? CYAN : SHAPE_COLORS[activeShape] || CYAN }} />
+                activeDot={{ r:4, fill: showBias ? AMBER : (activeShape === "All" ? CYAN : SHAPE_COLORS[activeShape] || CYAN) }} />
             </AreaChart>
           </ResponsiveContainer>
           <div style={{ fontSize:10, color:"#475569", textAlign:"center", marginTop:8 }}>
-            Notable spike after 2000 coincides with internet adoption enabling easier reporting
+            {showBias
+              ? "Bias-corrected: counts normalized by US internet penetration (World Bank data) — flattens the 2012 smartphone spike"
+              : "Raw count — spike after 2007 correlates strongly with smartphone adoption (camera + GPS = easier reporting)"}
           </div>
         </div>
       </div>
@@ -523,33 +563,87 @@ export default function ResearchDashboard() {
         </div>
       </div>
 
-      {/* ── KEY INSIGHTS ──────────────────────────────────────────── */}
-      <div>
+      {/* ── KEY QUESTIONS ANSWERED ────────────────────────────────── */}
+      <div style={{ marginBottom:56 }}>
         <SectionTitle
           icon={<Zap style={{ width:14, height:14 }} />}
-          title="DATA SCIENCE INSIGHTS"
-          sub="Patterns derived from 79,621 real NUFORC reports"
+          title="KEY QUESTIONS — ANSWERED WITH DATA"
+          sub="8 common questions about UAP data, answered from real computed statistics"
         />
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(280px, 1fr))", gap:12 }}>
-          {[
-            { stat: `${stats?.night_pct}%`, text: "of all reports occur between 8pm and 2am — strong night-sky watching bias or genuine nocturnal phenomena" },
-            { stat: "2014", text: "was the single peak year with over 8,600 reports — coincides with widespread drone adoption and social media reporting" },
-            { stat: "3.2×", text: "more triangle-shaped objects reported in the 2000s vs the 1980s — shape evolution remains unexplained" },
-            { stat: "CA", text: "reports more UAP sightings than any other state — follows population density but also has the most military air traffic" },
-            { stat: "<5min", text: "is the most common sighting duration — 67% of all reports last under 5 minutes, making detailed observation difficult" },
-            { stat: "80k+", text: "civilian reports vs only 144 in the official 2021 Pentagon report — massive gap between what public sees and what's officially logged" },
-          ].map((ins, i) => (
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(340px, 1fr))", gap:14 }}>
+          {keyQs.map((kq, i) => (
             <div key={i} style={{
-              display:"flex", gap:16, alignItems:"flex-start",
-              padding:"16px 20px", borderRadius:10,
-              background:"rgba(10,22,40,0.6)", border:"1px solid rgba(6,182,212,0.1)",
+              padding:"18px 20px", borderRadius:10,
+              background:"rgba(10,22,40,0.7)",
+              border:`1px solid ${kq.color}20`,
+              borderLeft:`3px solid ${kq.color}`,
             }}>
-              <div style={{ fontSize:22, fontWeight:900, color:CYAN, minWidth:64, textShadow:`0 0 16px ${CYAN}60`, flexShrink:0 }}>{ins.stat}</div>
-              <div style={{ fontSize:11, color:"#94a3b8", lineHeight:1.6 }}>{ins.text}</div>
+              <div style={{ display:"flex", alignItems:"baseline", gap:10, marginBottom:8 }}>
+                <span style={{ fontSize:26, fontWeight:900, color:kq.color, textShadow:`0 0 12px ${kq.color}60`, flexShrink:0 }}>{kq.stat}</span>
+                <span style={{ fontSize:9, color:kq.color, letterSpacing:"0.1em", opacity:0.8 }}>{kq.stat_label}</span>
+              </div>
+              <div style={{ fontSize:11, fontWeight:700, color:"#e2e8f0", marginBottom:6 }}>{kq.q}</div>
+              <div style={{ fontSize:10, color:"#94a3b8", lineHeight:1.6 }}>{kq.a}</div>
+              <div style={{ fontSize:8, color:"#475569", marginTop:8, letterSpacing:"0.05em" }}>Source: {kq.source}</div>
             </div>
           ))}
         </div>
       </div>
+
+      {/* ── PER-CAPITA STATE RANKING ──────────────────────────────── */}
+      {perCapita.length > 0 && (
+        <div style={{ marginBottom:56 }}>
+          <SectionTitle
+            icon={<Map style={{ width:14, height:14 }} />}
+            title="SIGHTINGS PER CAPITA — STATE RANKING"
+            sub="Normalized by 2010 Census population — removes the California population confound"
+          />
+          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:24 }}>
+            <div style={{ background:"rgba(10,22,40,0.6)", border:"1px solid rgba(6,182,212,0.12)", borderRadius:12, padding:"20px 16px 12px" }}>
+              <div style={{ fontSize:10, color:CYAN, letterSpacing:"0.2em", marginBottom:16 }}>SIGHTINGS PER 100K PEOPLE (TOP 15)</div>
+              <ResponsiveContainer width="100%" height={340}>
+                <BarChart data={perCapita.slice(0,15)} layout="vertical" margin={{ left:4, right:32 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(6,182,212,0.07)" horizontal={false} />
+                  <XAxis type="number" tick={{ fontSize:10, fill:"#64748b" }} tickLine={false} axisLine={false} />
+                  <YAxis type="category" dataKey="state" tick={{ fontSize:11, fill:"#94a3b8" }} tickLine={false} axisLine={false} width={32} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar dataKey="per_100k" name="Per 100k" radius={[0,4,4,0]}>
+                    {perCapita.slice(0,15).map((_, i) => <Cell key={i} fill={i === 0 ? GREEN : i < 3 ? CYAN : "#1e3a5f"} />)}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            <div style={{ background:"rgba(10,22,40,0.6)", border:"1px solid rgba(6,182,212,0.12)", borderRadius:12, padding:"20px 16px 12px", display:"flex", flexDirection:"column", gap:0 }}>
+              <div style={{ fontSize:10, color:CYAN, letterSpacing:"0.2em", marginBottom:16 }}>ABSOLUTE COUNT vs PER CAPITA RANK</div>
+              <div style={{ overflowY:"auto", flex:1 }}>
+                <table style={{ width:"100%", borderCollapse:"collapse", fontSize:11 }}>
+                  <thead>
+                    <tr style={{ borderBottom:"1px solid rgba(6,182,212,0.1)" }}>
+                      {["PC RANK","STATE","ABSOLUTE","PER 100K","POP (M)"].map(h => (
+                        <th key={h} style={{ padding:"6px 10px", textAlign:"left", fontSize:9, color:"#475569", letterSpacing:"0.12em" }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {perCapita.slice(0,15).map((r, i) => (
+                      <tr key={r.state} style={{ borderBottom:"1px solid rgba(6,182,212,0.05)" }}>
+                        <td style={{ padding:"7px 10px", color:i===0?GREEN:CYAN, fontWeight:700 }}>#{r.rank_per_capita}</td>
+                        <td style={{ padding:"7px 10px", color:"#e2e8f0", fontWeight:600 }}>{r.state}</td>
+                        <td style={{ padding:"7px 10px", color:"#64748b" }}>{r.count.toLocaleString()}</td>
+                        <td style={{ padding:"7px 10px", color:i===0?GREEN:AMBER, fontWeight:600 }}>{r.per_100k}</td>
+                        <td style={{ padding:"7px 10px", color:"#475569" }}>{r.pop_millions}M</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div style={{ fontSize:9, color:"#475569", marginTop:12 }}>
+                WA ranks #1 per capita despite CA dominating in absolute count — Pacific Northwest has proportionally the highest unexplained aerial activity in the NUFORC database
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── EXTRACTED INTELLIGENCE ────────────────────────────────── */}
       <div style={{ marginTop:64 }}>

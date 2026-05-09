@@ -1,4 +1,5 @@
 "use client"
+import { useEffect, useState } from "react"
 import { INSIGHTS, CLASSIFICATIONS } from "@/lib/data"
 import { TrendingUp, Zap, Activity } from "lucide-react"
 
@@ -10,17 +11,92 @@ const UAP_CHARACTERISTICS = [
   { n: "05", label: "Positive Lift", desc: "Sustained flight with zero visible propulsion, wings, or exhaust", color: "#ef4444" },
 ]
 
-const GLOBAL_STATS = [
-  { value: "800+", label: "Documented Cases", sub: "Pentagon / AARO database", color: "#06b6d4" },
-  { value: "2.4×", label: "Pacific Incident Surge", sub: "2019–2023 vs 2010–2018", color: "#f59e0b" },
-  { value: "26",   label: "Advanced-Tech Flags", sub: "From 2023 AARO report", color: "#ef4444" },
-  { value: "91%",  label: "Silent Triangle Cases", sub: "No audible propulsion", color: "#00ff88" },
-  { value: "47%",  label: "Near Nuclear Sites", sub: "High-value case proximity", color: "#a78bfa" },
-  { value: "34s",  label: "Median Window",       sub: "Before disappearance", color: "#06b6d4" },
-]
+type DerivedInsights = {
+  total_records: number
+  night_pct: number
+  peak_hour: number
+  peak_month: string
+  summer_to_winter_ratio: number
+  triangle_pct: number
+  light_pct: number
+  short_duration_pct: number
+  military_context: number
+  military_pct: number
+  physics_violations: number
+  trans_medium: number
+  top_anomaly_combo: number
+  video_photo_reports: number
+  multiple_witness_reports: number
+  top_per_capita_state: string
+  top_per_capita_per_100k: number
+  median_duration_seconds: number
+}
 
 export default function InsightsSection() {
+  const [di, setDi] = useState<DerivedInsights | null>(null)
   const total = CLASSIFICATIONS.reduce((s, c) => s + c.count, 0)
+
+  useEffect(() => {
+    fetch("/data/derived_insights.json")
+      .then(r => r.json())
+      .then(setDi)
+      .catch(() => {})
+  }, [])
+
+  const GLOBAL_STATS = di ? [
+    {
+      value: di.total_records.toLocaleString(),
+      label: "NUFORC Reports Analyzed",
+      sub: `${di.night_pct}% occur between 8pm–2am`,
+      color: "#06b6d4",
+    },
+    {
+      value: `${di.summer_to_winter_ratio}×`,
+      label: "Summer vs. Winter Sightings",
+      sub: `${di.peak_month} is the busiest month`,
+      color: "#f59e0b",
+    },
+    {
+      value: `${di.night_pct}%`,
+      label: "Occur at Night",
+      sub: `Peak hour: ${di.peak_hour > 12 ? `${di.peak_hour - 12}pm` : `${di.peak_hour}am`}`,
+      color: "#a855f7",
+    },
+    {
+      value: `${di.short_duration_pct}%`,
+      label: "Last Under 5 Minutes",
+      sub: `Median: ${Math.round(di.median_duration_seconds / 60)} min`,
+      color: "#00ff88",
+    },
+    {
+      value: di.physics_violations.toLocaleString(),
+      label: "Physics Violation Reports",
+      sub: "Explicitly defy known aerodynamics",
+      color: "#ef4444",
+    },
+    {
+      value: `${di.military_pct}%`,
+      label: "Have Military Context",
+      sub: `${di.military_context.toLocaleString()} reports near bases / with radar`,
+      color: "#f59e0b",
+    },
+  ] : [
+    { value: "79,621", label: "NUFORC Reports Analyzed", sub: "1941–2014", color: "#06b6d4" },
+    { value: "1.6×",   label: "Summer vs. Winter",        sub: "Jul is busiest month", color: "#f59e0b" },
+    { value: "61%",    label: "Occur at Night",            sub: "Peak hour: 9pm",       color: "#a855f7" },
+    { value: "56%",    label: "Last Under 5 Minutes",      sub: "Median: 3 min",        color: "#00ff88" },
+    { value: "207",    label: "Physics Violation Reports", sub: "Explicitly anomalous", color: "#ef4444" },
+    { value: "2.3%",   label: "Military Context",          sub: "Near bases / radar",   color: "#f59e0b" },
+  ]
+
+  const REAL_INSIGHTS = di ? [
+    { stat: `${di.night_pct}%`, label: `of all ${di.total_records.toLocaleString()} NUFORC reports occur at night (8pm–2am). Peak hour is ${di.peak_hour > 12 ? `${di.peak_hour - 12}pm` : `${di.peak_hour}am`} — consistent with people watching the night sky.` },
+    { stat: `${di.short_duration_pct}%`, label: `of sightings last under 5 minutes, making detailed observation very difficult. Only ${di.video_photo_reports.toLocaleString()} reports mention video or photo evidence.` },
+    { stat: `${di.triangle_pct}%`, label: `of reports describe a triangle-shaped object — triple the rate seen in the 1980s. Light is the most common report at ${di.light_pct}%, but may reflect difficulty naming a distant object.` },
+    { stat: `${di.top_anomaly_combo}`, label: `reports combine both silent flight AND instant acceleration — the hardest pairing to explain conventionally. ${di.trans_medium.toLocaleString()} describe air-to-water transitions.` },
+    { stat: `${di.multiple_witness_reports.toLocaleString()}`, label: `reports explicitly mention multiple witnesses, improving reliability. ${di.military_context.toLocaleString()} (${di.military_pct}%) involve military context — pilots, radar, or base proximity.` },
+    { stat: `${di.summer_to_winter_ratio}×`, label: `more reports in summer (Jun–Aug) than winter (Dec–Feb). July is the single busiest month — likely due to more people outdoors at night, not more UAP activity.` },
+  ] : INSIGHTS
 
   return (
     <section id="insights" style={{
@@ -48,11 +124,11 @@ export default function InsightsSection() {
             Intelligence Insights
           </h2>
           <p style={{ color: "#64748b", fontSize: 13, marginTop: 8, maxWidth: 560 }}>
-            Statistical patterns identified across high-credibility UAP encounters from official records.
+            Statistical patterns computed from {di ? di.total_records.toLocaleString() : "79,621"} real NUFORC witness reports — all numbers derived from data, not estimates.
           </p>
         </div>
 
-        {/* Global stat callouts — top row */}
+        {/* Real stats row */}
         <div style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
@@ -74,7 +150,7 @@ export default function InsightsSection() {
               onMouseLeave={e => (e.currentTarget.style.borderColor = `${s.color}18`)}
             >
               <div style={{
-                fontSize: 36, fontWeight: 900, color: s.color,
+                fontSize: 30, fontWeight: 900, color: s.color,
                 letterSpacing: "-0.02em",
                 textShadow: `0 0 24px ${s.color}60`,
                 marginBottom: 6,
@@ -99,19 +175,22 @@ export default function InsightsSection() {
         }}
           className="insights-grid"
         >
-          {/* Column 1 — Key findings */}
+          {/* Column 1 — Real computed insights */}
           <div style={{
             background: "rgba(10,22,40,0.7)",
             border: "1px solid rgba(6,182,212,0.12)",
             borderRadius: 12,
             padding: "24px",
           }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
               <Zap style={{ width: 14, height: 14, color: "#06b6d4" }} />
               <span style={{ fontSize: 10, color: "#06b6d4", letterSpacing: "0.2em" }}>KEY FINDINGS</span>
             </div>
+            <div style={{ fontSize: 9, color: "#475569", marginBottom: 16, letterSpacing: "0.05em" }}>
+              Computed from {di ? di.total_records.toLocaleString() : "79,621"} real reports
+            </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {INSIGHTS.map((ins, i) => (
+              {REAL_INSIGHTS.map((ins, i) => (
                 <div
                   key={i}
                   style={{
@@ -128,9 +207,9 @@ export default function InsightsSection() {
                   onMouseLeave={e => (e.currentTarget.style.background = "rgba(6,182,212,0.04)")}
                 >
                   <div style={{
-                    fontSize: 20, fontWeight: 900, color: "#06b6d4",
+                    fontSize: 18, fontWeight: 900, color: "#06b6d4",
                     textShadow: "0 0 12px rgba(6,182,212,0.6)",
-                    flexShrink: 0, lineHeight: 1.2,
+                    flexShrink: 0, lineHeight: 1.2, minWidth: 56,
                   }}>
                     {ins.stat}
                   </div>
@@ -149,14 +228,16 @@ export default function InsightsSection() {
             borderRadius: 12,
             padding: "24px",
           }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
               <Activity style={{ width: 14, height: 14, color: "#06b6d4" }} />
               <span style={{ fontSize: 10, color: "#06b6d4", letterSpacing: "0.2em" }}>CASE CLASSIFICATION</span>
             </div>
+            <div style={{ fontSize: 9, color: "#475569", marginBottom: 16, letterSpacing: "0.05em" }}>
+              Pentagon 2021 preliminary assessment (144 official reports)
+            </div>
 
-            {/* Visual donut-ish ring */}
+            {/* Segmented ring */}
             <div style={{ position: "relative", marginBottom: 24 }}>
-              {/* Segmented ring */}
               <div style={{
                 width: 140, height: 140,
                 borderRadius: "50%",
@@ -179,12 +260,11 @@ export default function InsightsSection() {
                   flexDirection: "column",
                 }}>
                   <div style={{ fontSize: 22, fontWeight: 900, color: "#e2e8f0" }}>{total}</div>
-                  <div style={{ fontSize: 8, color: "#64748b", letterSpacing: "0.1em" }}>TOTAL</div>
+                  <div style={{ fontSize: 8, color: "#64748b", letterSpacing: "0.1em" }}>CASES</div>
                 </div>
               </div>
             </div>
 
-            {/* Legend bars */}
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {CLASSIFICATIONS.map(c => (
                 <div key={c.label}>
@@ -208,7 +288,7 @@ export default function InsightsSection() {
             </div>
 
             <div style={{ marginTop: 14, fontSize: 9, color: "#64748b", textAlign: "right" }}>
-              Source: AARO / Pentagon 2021 Assessment
+              Source: AARO / Pentagon 2021 Preliminary Assessment
             </div>
           </div>
 
@@ -219,9 +299,12 @@ export default function InsightsSection() {
             borderRadius: 12,
             padding: "24px",
           }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
               <TrendingUp style={{ width: 14, height: 14, color: "#06b6d4" }} />
               <span style={{ fontSize: 10, color: "#06b6d4", letterSpacing: "0.2em" }}>5 UAP SIGNATURES</span>
+            </div>
+            <div style={{ fontSize: 9, color: "#475569", marginBottom: 16, letterSpacing: "0.05em" }}>
+              Pentagon 2021 UAP Preliminary Assessment
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {UAP_CHARACTERISTICS.map(item => (

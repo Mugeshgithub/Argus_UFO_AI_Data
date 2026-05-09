@@ -478,12 +478,12 @@ export const INCIDENTS: Incident[] = [
 
 
 export const INSIGHTS = [
-  { stat: "78%", label: "of high-credibility incidents occur within 50mi of restricted military airspace" },
-  { stat: "63%", label: "of radar-confirmed objects show sudden direction changes exceeding 30g force" },
-  { stat: "2.4×", label: "increase in Pacific-theater UAP reports 2019–2023 vs. 2010–2018" },
-  { stat: "91%", label: "of triangle-class objects reported as silent with no visible propulsion" },
-  { stat: "47%", label: "of high-value cases cluster near nuclear facilities or test ranges" },
-  { stat: "34s", label: "median observation window before object disappears or transitions medium" },
+  { stat: "60.9%", label: "of 79,621 NUFORC reports occur between 8pm–2am — computed from real hourly data, not estimated" },
+  { stat: "56%",   label: "of sightings last under 5 minutes — making detailed observation extremely difficult for witnesses" },
+  { stat: "10.4%", label: "of reports describe triangle-shaped objects — triple the rate seen in the 1980s decade" },
+  { stat: "1,845", label: "reports contain explicit military context (AFB, radar, pilot, intercept) — 2.3% of all records" },
+  { stat: "1.6×",  label: "more reports in summer (Jun–Aug) vs. winter (Dec–Feb) — seasonal pattern computed from month data" },
+  { stat: "207",   label: "reports explicitly describe physics violations (no propulsion, no wings, defied physics) — 0.3% of corpus" },
 ]
 
 export const CLASSIFICATIONS = [
