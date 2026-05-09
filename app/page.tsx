@@ -1,65 +1,98 @@
-import Image from "next/image";
+"use client"
+import { useState, useEffect } from "react"
+
+import Sidebar from "./components/Sidebar"
+import LandingView from "./components/LandingView"
+import DashboardView from "./components/DashboardView"
+import CasesView from "./components/CasesView"
+import ResearchView from "./components/ResearchView"
+import AIView from "./components/AIView"
+import MapView from "./components/MapView"
+import VideosView from "./components/VideosView"
+import TimelineView from "./components/TimelineView"
+import SourcesView from "./components/SourcesView"
+import LiveFeedView from "./components/LiveFeedView"
+import InsightsView from "./components/InsightsView"
+import FloatingChat from "./components/FloatingChat"
+import CollectView from "./components/CollectView"
+import ExtractView from "./components/ExtractView"
+import ClusterView from "./components/ClusterView"
+import ScoreView from "./components/ScoreView"
+
+export type ViewId =
+  | "landing"
+  | "dashboard"
+  | "livefeed"
+  | "cases"
+  | "insights"
+  | "ai"
+  | "map"
+  | "videos"
+  | "timeline"
+  | "research"
+  | "sources"
+  | "collect"
+  | "extract"
+  | "cluster"
+  | "score"
 
 export default function Home() {
+  const [view, setView] = useState<ViewId>("landing")
+  const [apiKey, setApiKey] = useState("")
+
+  useEffect(() => {
+    const savedKey  = localStorage.getItem("argus_api_key")
+    const savedView = localStorage.getItem("argus_last_view") as ViewId | null
+    if (savedKey)  setApiKey(savedKey)
+    if (savedView && savedView !== "landing") setView(savedView)
+  }, [])
+
+  function handleApiKey(k: string) {
+    setApiKey(k)
+    if (k) localStorage.setItem("argus_api_key", k)
+    else localStorage.removeItem("argus_api_key")
+  }
+
+  function handleNav(v: string) {
+    const next = v as ViewId
+    setView(next)
+    if (next === "landing") localStorage.removeItem("argus_last_view")
+    else localStorage.setItem("argus_last_view", next)
+  }
+
+  // Landing shows full-screen with no sidebar
+  if (view === "landing") {
+    return (
+      <div style={{ background: "#020817", minHeight: "100vh" }}>
+        <LandingView onEnter={() => setView("dashboard")} />
+      </div>
+    )
+  }
+
+  const views: Record<Exclude<ViewId, "landing">, React.ReactNode> = {
+    dashboard: <DashboardView onNav={handleNav} apiKey={apiKey} />,
+    livefeed:  <LiveFeedView />,
+    cases:     <CasesView />,
+    insights:  <InsightsView />,
+    ai:        <AIView apiKey={apiKey} />,
+    map:       <MapView />,
+    videos:    <VideosView />,
+    timeline:  <TimelineView />,
+    research:  <ResearchView />,
+    sources:   <SourcesView />,
+    collect:   <CollectView onNav={handleNav} />,
+    extract:   <ExtractView onNav={handleNav} />,
+    cluster:   <ClusterView onNav={handleNav} />,
+    score:     <ScoreView onNav={handleNav} />,
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+    <div style={{ display: "flex", height: "100vh", overflow: "hidden", background: "#020817" }}>
+      <Sidebar activeView={view} onNav={handleNav} apiKey={apiKey} onApiKey={handleApiKey} />
+      <main style={{ marginLeft: 220, flex: 1, minWidth: 0, height: "100vh", overflow: "auto" }}>
+        {views[view as Exclude<ViewId, "landing">]}
       </main>
+      <FloatingChat apiKey={apiKey} />
     </div>
-  );
+  )
 }

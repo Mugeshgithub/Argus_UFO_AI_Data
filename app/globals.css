@@ -1,26 +1,137 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --color-navy: #020817;
+  --color-surface: #0a1628;
+  --color-surface2: #0f2040;
+  --color-border: #1a3a5c;
+  --color-cyan: #06b6d4;
+  --color-neon: #00ff88;
+  --color-amber: #f59e0b;
+  --color-alert: #ef4444;
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --cyan: #06b6d4;
+  --green: #00ff88;
+  --amber: #f59e0b;
+  --red: #ef4444;
 }
 
+* { box-sizing: border-box; }
+
+html { height: 100%; }
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #020817;
+  color: #e2e8f0;
+  font-family: var(--font-geist-mono), 'SF Mono', 'Fira Code', monospace;
+  overflow-x: hidden;
+  min-height: 100%;
 }
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #1a3a5c; border-radius: 4px; }
+
+/* Animated grid */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(6,182,212,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(6,182,212,0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+  animation: grid-drift 60s linear infinite;
+}
+@keyframes grid-drift {
+  0% { background-position: 0 0; }
+  100% { background-position: 48px 48px; }
+}
+
+/* Glow utilities */
+.glow-cyan { box-shadow: 0 0 20px rgba(6,182,212,0.35); }
+.glow-green { box-shadow: 0 0 20px rgba(0,255,136,0.3); }
+.glow-red   { box-shadow: 0 0 20px rgba(239,68,68,0.4); }
+.glow-text  { text-shadow: 0 0 12px rgba(6,182,212,0.8); }
+
+/* Radar sweep */
+@keyframes radar-sweep { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.animate-radar { animation: radar-sweep 4s linear infinite; }
+
+/* Pulse ring */
+@keyframes pulse-ring {
+  0%   { transform: scale(0.8); opacity: 1; }
+  100% { transform: scale(2.8); opacity: 0; }
+}
+.pulse-ring { animation: pulse-ring 2s ease-out infinite; }
+
+/* Blink */
+@keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.2; } }
+.animate-blink { animation: blink 1s ease-in-out infinite; }
+
+/* Scan line */
+@keyframes scan {
+  0%   { top: 0%; opacity: 1; }
+  90%  { opacity: 0.6; }
+  100% { top: 100%; opacity: 0; }
+}
+.scan-line {
+  position: absolute; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+  animation: scan 3s ease-in-out infinite;
+  box-shadow: 0 0 8px var(--cyan);
+}
+
+/* Glass */
+.glass {
+  background: rgba(10,22,40,0.75);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(6,182,212,0.15);
+}
+
+/* Neon border */
+.neon-border {
+  border: 1px solid rgba(6,182,212,0.5);
+  box-shadow: 0 0 12px rgba(6,182,212,0.2), inset 0 0 12px rgba(6,182,212,0.04);
+}
+
+/* Leaflet dark map */
+.leaflet-container { background: #020817 !important; font-family: inherit !important; }
+.leaflet-tile { filter: invert(1) hue-rotate(200deg) brightness(0.55) saturate(0.6) contrast(1.1); }
+.leaflet-popup-content-wrapper {
+  background: #0a1628 !important; color: #e2e8f0 !important;
+  border: 1px solid rgba(6,182,212,0.5) !important; border-radius: 8px !important;
+  box-shadow: 0 0 24px rgba(6,182,212,0.3) !important;
+}
+.leaflet-popup-tip { background: #0a1628 !important; }
+.leaflet-popup-close-button { color: #64748b !important; top: 6px !important; right: 8px !important; }
+.leaflet-control-zoom a {
+  background: #0a1628 !important; color: var(--cyan) !important;
+  border-color: rgba(6,182,212,0.3) !important;
+}
+.leaflet-bar { border-color: rgba(6,182,212,0.3) !important; }
+
+/* Flicker */
+@keyframes flicker {
+  0%,100% { opacity:1; } 92% { opacity:1; } 93% { opacity:0.3; } 94% { opacity:1; } 97% { opacity:0.7; }
+}
+.animate-flicker { animation: flicker 10s ease-in-out infinite; }
+
+/* Confidence bar gradient */
+.conf-bar { height: 3px; border-radius: 2px; box-shadow: 0 0 6px currentColor; }
+
+/* Tag */
+.tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 3px;
+  font-size: 0.6rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+}
+
+/* Feed scroll */
+@keyframes feed-scroll {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+.animate-feed { animation: feed-scroll 30s linear infinite; }
+.animate-feed:hover { animation-play-state: paused; }
