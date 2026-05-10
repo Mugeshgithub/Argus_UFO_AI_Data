@@ -4,9 +4,9 @@
 
 ARGUS is a full-stack data science platform that analyzes **79,621 declassified sightings** from the National UFO Reporting Center (NUFORC), runs them through an NLP pipeline, and surfaces patterns humans miss at scale — bias corrections, per-capita normalization, behavioral clustering, and credibility scoring included.
 
-**[Live Demo →](https://your-deployed-url.vercel.app)**
+**[Live Demo →](https://argus-ufo-ai-data.vercel.app)**
 
-![ARGUS Dashboard](public/preview.png)
+[![Watch Walkthrough](scripts/argus_walkthrough_v3.mp4)](https://argus-ufo-ai-data.vercel.app)
 
 ---
 
@@ -112,8 +112,8 @@ Rule-based regex matching across all 79,621 raw report texts — no external API
 ## Local Setup
 
 ```bash
-git clone https://github.com/your-username/argus-uap-command
-cd argus-uap-command
+git clone https://github.com/Mugeshgithub/Argus_UFO_AI_Data
+cd Argus_UFO_AI_Data
 npm install
 npm run dev
 ```

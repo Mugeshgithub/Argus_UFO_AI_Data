@@ -40,8 +40,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# scripts — generated videos and temp dirs
-scripts/*.mp4
+# scripts — temp dirs and intermediate videos (keep final walkthrough)
+scripts/argus_top5_findings.mp4
+scripts/argus_walkthrough.mp4
+scripts/argus_walkthrough_real.mp4
 scripts/__pycache__/
 scripts/_tmp_frames/
 scripts/_tmp_walk/
