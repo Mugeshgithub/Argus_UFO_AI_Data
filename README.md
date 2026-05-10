@@ -118,17 +118,9 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
+No environment variables required. All data is pre-computed and shipped as static JSON.
 
-No environment variables required. All data is pre-computed and shipped as static JSON. The AI Analyst feature requires an OpenAI API key entered at runtime via the sidebar — nothing is stored server-side.
-
-### Re-run the Data Pipeline
-
-```bash
-cd scripts
-pip install pandas pillow moviepy edge-tts
-python3 derive_advanced_data.py   # regenerates all derived JSON files
-```
+The **AI Analyst** tab requires your own OpenAI API key — enter it at runtime via the sidebar. Nothing is stored server-side.
 
 ---
 
