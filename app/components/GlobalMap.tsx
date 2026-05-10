@@ -9,9 +9,12 @@ type MapPoint = {
   city: string; state: string | null; country: string | null; duration_seconds: number
 }
 
+type MilBase = { name: string; branch: string; lat: number; lng: number; state: string; type: string }
+
 type HoverData =
   | { kind: "point";   x: number; y: number; shape: string; color: string; loc: string; year: number; dur: string }
   | { kind: "hotspot"; x: number; y: number; name: string; intensity: number; dotColor: string; incidentTitle?: string; hasVideo?: boolean }
+  | { kind: "base";    x: number; y: number; name: string; branch: string; type: string; state: string }
 
 const SHAPES = [
   { key: "Light",     color: "#06b6d4" },
@@ -42,9 +45,10 @@ function ptRadius(sec: number | null): number {
 const INTENSITY_LABEL = ["", "LOW", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
 
 export default function GlobalMap() {
-  const mapRef         = useRef<HTMLDivElement>(null)
-  const mapInstance    = useRef<unknown>(null)
-  const shapeLayersRef = useRef<Map<string, unknown>>(new Map())
+  const mapRef          = useRef<HTMLDivElement>(null)
+  const mapInstance     = useRef<unknown>(null)
+  const shapeLayersRef  = useRef<Map<string, unknown>>(new Map())
+  const basesLayerRef   = useRef<unknown>(null)
 
   const [selected,     setSelected]     = useState<Incident | null>(null)
   const [videoReady,   setVideoReady]   = useState(false)
@@ -52,6 +56,7 @@ export default function GlobalMap() {
   const [shapeCounts,  setShapeCounts]  = useState<Record<string, number>>({})
   const [activeShapes, setActiveShapes] = useState<Set<string>>(new Set(SHAPES.map(s => s.key)))
   const [hover,        setHover]        = useState<HoverData | null>(null)
+  const [showBases,    setShowBases]    = useState(false)
 
   const selectedRef     = useRef<((inc: Incident | null) => void) | null>(null)
   const activeShapesRef = useRef<Set<string>>(new Set(SHAPES.map(s => s.key)))
@@ -170,6 +175,34 @@ export default function GlobalMap() {
         marker.addTo(map)
       })
 
+      // ── Military bases layer (loaded once, toggled by state) ────
+      const basesLayer = L.layerGroup()
+      fetch("/data/military_bases.json")
+        .then(r => r.json())
+        .then((bases: MilBase[]) => {
+          bases.forEach(base => {
+            const icon = L.divIcon({
+              className: "",
+              html: `<div style="width:14px;height:14px;background:#ef4444;border:2px solid #fff;border-radius:2px;transform:rotate(45deg);box-shadow:0 0 8px #ef4444cc;cursor:pointer;"></div>`,
+              iconSize: [14, 14],
+              iconAnchor: [7, 7],
+            })
+            const m = L.marker([base.lat, base.lng], { icon })
+            m.on("mouseover", (e) => {
+              const { x, y } = relPos(e.originalEvent)
+              setHoverRef.current({ kind: "base", x, y, name: base.name, branch: base.branch, type: base.type, state: base.state })
+            })
+            m.on("mousemove", (e) => {
+              const { x, y } = relPos(e.originalEvent)
+              setHoverRef.current(prev => prev?.kind === "base" ? { ...prev, x, y } : prev)
+            })
+            m.on("mouseout", () => setHoverRef.current(null))
+            basesLayer.addLayer(m)
+          })
+          basesLayerRef.current = basesLayer
+        })
+        .catch(() => {})
+
       map.on("click", (e) => {
         const target = e.originalEvent?.target as HTMLElement
         if (target?.closest(".leaflet-marker-icon")) return
@@ -186,6 +219,13 @@ export default function GlobalMap() {
       }
     }
   }, [])
+
+  useEffect(() => {
+    const map = mapInstance.current as { addLayer: (l: unknown) => void; removeLayer: (l: unknown) => void } | null
+    if (!map || !basesLayerRef.current) return
+    if (showBases) map.addLayer(basesLayerRef.current)
+    else map.removeLayer(basesLayerRef.current)
+  }, [showBases])
 
   function toggleShape(key: string) {
     setActiveShapes(prev => {
@@ -274,6 +314,22 @@ export default function GlobalMap() {
         })}
         <button onClick={selectAll}  style={{ fontSize:8, color:"#06b6d4", background:"none", border:"none", cursor:"pointer", padding:"2px 6px", letterSpacing:"0.1em", marginLeft:4 }}>ALL</button>
         <button onClick={selectNone} style={{ fontSize:8, color:"#475569", background:"none", border:"none", cursor:"pointer", padding:"2px 6px", letterSpacing:"0.1em" }}>NONE</button>
+
+        {/* Military bases toggle */}
+        <button
+          onClick={() => setShowBases(v => !v)}
+          style={{
+            display:"flex", alignItems:"center", gap:5, padding:"2px 10px", borderRadius:4, cursor:"pointer", marginLeft:8,
+            border: showBases ? "1px solid rgba(239,68,68,0.5)" : "1px solid rgba(71,85,105,0.3)",
+            background: showBases ? "rgba(239,68,68,0.12)" : "transparent",
+            transition:"all 0.15s", flexShrink:0,
+          }}
+        >
+          <div style={{ width:10, height:10, background:"#ef4444", border:"1.5px solid #fff", borderRadius:2, transform:"rotate(45deg)", boxShadow: showBases ? "0 0 6px #ef4444" : "none" }} />
+          <span style={{ fontSize:9, color: showBases ? "#ef4444" : "#475569", letterSpacing:"0.08em" }}>
+            {showBases ? "HIDE" : "SHOW"} MIL BASES
+          </span>
+        </button>
       </div>
 
       {/* ── Map ── */}
@@ -302,6 +358,16 @@ export default function GlobalMap() {
                   <div style={{ fontSize:12, fontWeight:700, color:"#e2e8f0", fontFamily:"monospace" }}>{hover.dur}</div>
                 </div>
               </div>
+            </div>
+          ) : hover.kind === "base" ? (
+            <div style={{ background:"rgba(6,12,28,0.97)", border:"1px solid rgba(239,68,68,0.5)", borderRadius:8, padding:"10px 14px", minWidth:220, boxShadow:"0 4px 24px rgba(0,0,0,0.6), 0 0 12px rgba(239,68,68,0.2)" }}>
+              <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:6 }}>
+                <div style={{ width:10, height:10, background:"#ef4444", border:"1.5px solid #fff", borderRadius:2, transform:"rotate(45deg)", flexShrink:0 }} />
+                <span style={{ fontSize:9, fontWeight:700, color:"#ef4444", letterSpacing:"0.2em" }}>MILITARY INSTALLATION</span>
+              </div>
+              <div style={{ fontSize:12, fontWeight:700, color:"#e2e8f0", marginBottom:4, lineHeight:1.3 }}>{hover.name}</div>
+              <div style={{ fontSize:10, color:"#64748b", marginBottom:2 }}>{hover.branch} · {hover.type}</div>
+              <div style={{ fontSize:9, color:"#475569", letterSpacing:"0.1em" }}>{hover.state}</div>
             </div>
           ) : (
             <div style={{ background:"rgba(6,12,28,0.97)", border:`1px solid ${hover.dotColor}66`, borderRadius:8, padding:"10px 14px", minWidth:220, boxShadow:`0 4px 24px rgba(0,0,0,0.6), 0 0 16px ${hover.dotColor}33` }}>
