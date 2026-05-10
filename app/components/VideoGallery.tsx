@@ -1,5 +1,4 @@
 "use client"
-import { useState } from "react"
 import { Play, ExternalLink, CheckCircle, Shield } from "lucide-react"
 import { INCIDENTS } from "@/lib/data"
 
@@ -21,8 +20,8 @@ function CredBar({ value }: { value: number }) {
 }
 
 function VideoCard({ inc }: { inc: (typeof VIDEO_INCIDENTS)[0] }) {
-  const [playing, setPlaying] = useState(false)
   const thumbUrl = `https://img.youtube.com/vi/${inc.videoId}/hqdefault.jpg`
+  const ytUrl    = `https://www.youtube.com/watch?v=${inc.videoId}`
 
   return (
     <div style={{
@@ -41,93 +40,83 @@ function VideoCard({ inc }: { inc: (typeof VIDEO_INCIDENTS)[0] }) {
         ;(e.currentTarget as HTMLElement).style.boxShadow = "none"
       }}
     >
-      {/* Thumbnail / Player */}
+      {/* Thumbnail — clicks open YouTube directly, no embed errors */}
       <div style={{ position: "relative", paddingBottom: "56.25%", background: "#000" }}>
-        {!playing ? (
-          <div
-            style={{
-              position: "absolute", inset: 0,
-              cursor: "pointer",
-              backgroundImage: `url(${thumbUrl})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-            onClick={() => setPlaying(true)}
-          >
-            {/* Dark overlay */}
-            <div style={{
-              position: "absolute", inset: 0,
-              background: "rgba(2,8,23,0.45)",
-            }} />
+        <a
+          href={ytUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            position: "absolute", inset: 0,
+            backgroundImage: `url(${thumbUrl})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            display: "block",
+          }}
+        >
+          {/* Dark overlay */}
+          <div style={{ position: "absolute", inset: 0, background: "rgba(2,8,23,0.45)" }} />
 
-            {/* Play button */}
-            <div style={{
-              position: "absolute",
-              top: "50%", left: "50%",
-              transform: "translate(-50%, -50%)",
-              width: 64, height: 64,
-              borderRadius: "50%",
-              background: "rgba(6,182,212,0.2)",
-              border: "2px solid rgba(6,182,212,0.7)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              boxShadow: "0 0 32px rgba(6,182,212,0.4)",
-              transition: "all 0.2s",
+          {/* Play button */}
+          <div style={{
+            position: "absolute",
+            top: "50%", left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 64, height: 64,
+            borderRadius: "50%",
+            background: "rgba(6,182,212,0.2)",
+            border: "2px solid rgba(6,182,212,0.7)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            boxShadow: "0 0 32px rgba(6,182,212,0.4)",
+          }}>
+            <Play style={{ width: 24, height: 24, color: "#06b6d4", marginLeft: 4 }} />
+          </div>
+
+          {/* Badges */}
+          <div style={{ position: "absolute", top: 10, left: 10, display: "flex", gap: 6 }}>
+            <span style={{
+              padding: "3px 8px", borderRadius: 4,
+              background: "rgba(0,255,136,0.15)", border: "1px solid rgba(0,255,136,0.4)",
+              fontSize: 8, color: "#00ff88", letterSpacing: "0.15em", fontWeight: 700,
+              display: "flex", alignItems: "center", gap: 4,
             }}>
-              <Play style={{ width: 24, height: 24, color: "#06b6d4", marginLeft: 4 }} />
-            </div>
-
-            {/* Badges */}
-            <div style={{ position: "absolute", top: 10, left: 10, display: "flex", gap: 6 }}>
+              <CheckCircle style={{ width: 8, height: 8 }} />
+              OFFICIAL RELEASE
+            </span>
+            {inc.military && (
               <span style={{
                 padding: "3px 8px", borderRadius: 4,
-                background: "rgba(0,255,136,0.15)", border: "1px solid rgba(0,255,136,0.4)",
-                fontSize: 8, color: "#00ff88", letterSpacing: "0.15em", fontWeight: 700,
+                background: "rgba(6,182,212,0.15)", border: "1px solid rgba(6,182,212,0.4)",
+                fontSize: 8, color: "#06b6d4", letterSpacing: "0.15em", fontWeight: 700,
                 display: "flex", alignItems: "center", gap: 4,
               }}>
-                <CheckCircle style={{ width: 8, height: 8 }} />
-                OFFICIAL RELEASE
+                <Shield style={{ width: 8, height: 8 }} />
+                MILITARY
               </span>
-              {inc.military && (
-                <span style={{
-                  padding: "3px 8px", borderRadius: 4,
-                  background: "rgba(6,182,212,0.15)", border: "1px solid rgba(6,182,212,0.4)",
-                  fontSize: 8, color: "#06b6d4", letterSpacing: "0.15em", fontWeight: 700,
-                  display: "flex", alignItems: "center", gap: 4,
-                }}>
-                  <Shield style={{ width: 8, height: 8 }} />
-                  MILITARY
-                </span>
-              )}
-            </div>
+            )}
+          </div>
 
-            {/* Date */}
-            <div style={{
-              position: "absolute", bottom: 10, right: 10,
-              fontSize: 9, color: "rgba(148,163,184,0.8)",
-              background: "rgba(2,8,23,0.7)", padding: "3px 8px", borderRadius: 4,
-            }}>
-              {inc.date}
-            </div>
+          {/* Watch on YouTube label */}
+          <div style={{
+            position: "absolute", bottom: 0, left: 0, right: 0,
+            padding: "6px 12px",
+            background: "rgba(2,8,23,0.85)",
+            borderTop: "1px solid rgba(6,182,212,0.15)",
+            fontSize: 9, color: "#ef4444", letterSpacing: "0.1em",
+            display: "flex", alignItems: "center", gap: 6,
+          }}>
+            <Play style={{ width: 9, height: 9 }} /> WATCH ON YOUTUBE →
           </div>
-        ) : (
-          <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column" }}>
-            <iframe
-              style={{ flex:1, width:"100%", border:"none" }}
-              src={`https://www.youtube-nocookie.com/embed/${inc.videoId}?autoplay=1&mute=1&rel=0&modestbranding=1`}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-              allowFullScreen
-            />
-            {/* Fallback link shown below iframe — always visible if embed fails */}
-            <a
-              href={`https://www.youtube.com/watch?v=${inc.videoId}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:6, padding:"6px 0", background:"rgba(2,8,23,0.95)", borderTop:"1px solid rgba(239,68,68,0.2)", fontSize:9, color:"#ef4444", letterSpacing:"0.1em", textDecoration:"none", flexShrink:0 }}
-            >
-              <Play style={{ width:10, height:10 }} /> WATCH ON YOUTUBE →
-            </a>
+
+          {/* Date */}
+          <div style={{
+            position: "absolute", top: 10, right: 10,
+            fontSize: 9, color: "rgba(148,163,184,0.8)",
+            background: "rgba(2,8,23,0.7)", padding: "3px 8px", borderRadius: 4,
+          }}>
+            {inc.date}
           </div>
-        )}
+        </a>
       </div>
 
       {/* Info */}
