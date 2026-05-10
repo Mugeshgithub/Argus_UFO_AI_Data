@@ -39,6 +39,14 @@ export type ViewId =
 export default function Home() {
   const [view, setView] = useState<ViewId>("landing")
   const [apiKey, setApiKey] = useState("")
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener("resize", check)
+    return () => window.removeEventListener("resize", check)
+  }, [])
 
   useEffect(() => {
     const savedKey  = localStorage.getItem("argus_api_key")
@@ -89,7 +97,7 @@ export default function Home() {
   return (
     <div style={{ display: "flex", height: "100vh", overflow: "hidden", background: "#020817" }}>
       <Sidebar activeView={view} onNav={handleNav} apiKey={apiKey} onApiKey={handleApiKey} />
-      <main style={{ marginLeft: 220, flex: 1, minWidth: 0, height: "100vh", overflow: "auto" }}>
+      <main style={{ marginLeft: isMobile ? 0 : 220, flex: 1, minWidth: 0, height: "100vh", overflow: "auto" }}>
         {views[view as Exclude<ViewId, "landing">]}
       </main>
       <FloatingChat apiKey={apiKey} />
