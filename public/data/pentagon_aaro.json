@@ -1,0 +1,94 @@
+{
+  "source": "AARO — All-domain Anomaly Resolution Office",
+  "last_updated": "2024-11",
+  "reports": [
+    {
+      "id": "AARO-2024-001",
+      "title": "FY2024 Consolidated Annual Report on UAP",
+      "year": 2024,
+      "total_reports": 757,
+      "resolved": 118,
+      "unresolved": 639,
+      "url": "https://www.aaro.mil/Congressional-Press-Products/",
+      "key_findings": [
+        "757 UAP reports received in FY2024",
+        "118 cases resolved to prosaic causes",
+        "Majority of unresolved cases lack sufficient data for resolution",
+        "Transmedium cases — objects moving between air, sea, space — flagged as priority",
+        "No evidence of extraterrestrial origin in any resolved case"
+      ],
+      "domains": {
+        "airborne": 72,
+        "maritime": 8,
+        "transmedium": 6,
+        "space": 4,
+        "unknown": 10
+      }
+    },
+    {
+      "id": "AARO-2024-HRR1",
+      "title": "AARO Historical Record Report Vol. 1",
+      "year": 2024,
+      "coverage": "1945–2023",
+      "url": "https://www.aaro.mil/UAP-Records/",
+      "key_findings": [
+        "No verifiable evidence of non-terrestrial intelligence or extraterrestrial craft in US government holdings",
+        "Many historical sightings correlate with classified US program activity",
+        "Misidentification of advanced US programs accounts for a significant portion of historical reports",
+        "Persistent stigma reduced reporting quality throughout Cold War era",
+        "Structured data collection only began systematically post-2021"
+      ]
+    },
+    {
+      "id": "ODNI-2021",
+      "title": "Preliminary Assessment: UAP (ODNI)",
+      "year": 2021,
+      "total_reports": 144,
+      "coverage": "2004–2021",
+      "url": "https://www.dni.gov/files/ODNI/documents/assessments/Prelimary-Assessment-UAP-20210625.pdf",
+      "key_findings": [
+        "144 reports from US government sources 2004–2021",
+        "80 reports involved observation with multiple sensors",
+        "18 incidents described unusual movement: stationary winds, sudden direction changes, extreme speed",
+        "11 reports of near-misses with US aircraft",
+        "Most could not be identified due to limited data"
+      ],
+      "categories": {
+        "airborne_clutter": "ruled out for most",
+        "natural_atmospheric": "possible for some",
+        "USG_or_industry": "some may be",
+        "foreign_adversary": "possible subset",
+        "other": "catch-all for remainder"
+      }
+    },
+    {
+      "id": "PURSUE-2026",
+      "title": "PURSUE Portal Initial Release — war.gov/ufo",
+      "year": 2026,
+      "total_files": 162,
+      "breakdown": {
+        "documents": 120,
+        "videos": 28,
+        "images": 14
+      },
+      "sources": ["FBI", "Department of Defense", "NASA", "State Department"],
+      "url": "https://www.war.gov/ufo/",
+      "key_findings": [
+        "162 files released May 8 2026 — first tranche of rolling declassification",
+        "Covers eyewitness testimony, photos, and reports dating back decades",
+        "757 total UAP reports received by AARO in recent reporting period",
+        "Files span FBI, DoD, NASA, and State Department records",
+        "Additional tranches to be released every few weeks"
+      ]
+    }
+  ],
+  "summary_stats": {
+    "total_official_reports_post2021": 757,
+    "resolved_pct": 15.6,
+    "transmedium_cases": 6,
+    "sensor_corroborated_pct": 56,
+    "near_miss_incidents": 11,
+    "coverage_years": "1945–2024",
+    "reporting_agencies": ["DoD", "AARO", "ODNI", "NASA", "FBI", "FAA"]
+  }
+}

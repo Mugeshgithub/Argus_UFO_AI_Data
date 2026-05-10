@@ -103,6 +103,16 @@ const SOURCES: Source[] = [
     highlights: ["12,618 cases analyzed", "701 unresolved cases", "National Archives collection"],
     url: "https://www.archives.gov",
   },
+  {
+    name: "PURSUE — Presidential Unsealing & Reporting System for UAP Encounters",
+    shortName: "war.gov/ufo",
+    description: "The US Government's newest UAP declassification portal launched May 8, 2026. Contains 162 files from FBI, DoD, NASA, and State Department — the largest single UAP document release in history. Files released on a rolling basis.",
+    badge: "DECLASSIFIED",
+    badgeColor: "#06b6d4",
+    category: "Multi-Agency",
+    highlights: ["162 files — May 2026 initial release", "120 documents · 28 videos · 14 images", "FBI, DoD, NASA, State Dept records", "Rolling declassification — more coming"],
+    url: "https://www.war.gov/ufo",
+  },
 ]
 
 const BADGE_STYLES: Record<string, { bg: string; border: string }> = {
@@ -238,6 +248,33 @@ export default function SourcesSection() {
               </div>
             )
           })}
+        </div>
+
+        {/* Pentagon / AARO live stats banner */}
+        <div style={{
+          display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+          gap: 12, marginBottom: 32,
+          padding: "20px 24px",
+          background: "rgba(6,182,212,0.04)",
+          border: "1px solid rgba(6,182,212,0.15)",
+          borderRadius: 12,
+        }}>
+          <div style={{ fontSize: 9, color: "#06b6d4", letterSpacing: "0.2em", gridColumn: "1/-1", marginBottom: 4 }}>
+            ◈ PENTAGON / AARO — OFFICIAL PUBLISHED STATISTICS
+          </div>
+          {[
+            { v: "757",   l: "UAP Reports — FY2024", c: "#06b6d4" },
+            { v: "15.6%", l: "Cases Resolved",        c: "#00ff88" },
+            { v: "162",   l: "PURSUE Files Released", c: "#f59e0b" },
+            { v: "11",    l: "Near-Miss Incidents",   c: "#ef4444" },
+            { v: "1945",  l: "Earliest Record",       c: "#a78bfa" },
+            { v: "6",     l: "Transmedium Cases",     c: "#06b6d4" },
+          ].map(({ v, l, c }) => (
+            <div key={l}>
+              <div style={{ fontSize: 22, fontWeight: 800, color: c, lineHeight: 1 }}>{v}</div>
+              <div style={{ fontSize: 9, color: "#64748b", marginTop: 4, letterSpacing: "0.05em" }}>{l}</div>
+            </div>
+          ))}
         </div>
 
         {/* Source grid */}
