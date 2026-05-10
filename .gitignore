@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# scripts — generated videos and temp dirs
+scripts/*.mp4
+scripts/__pycache__/
+scripts/_tmp_frames/
+scripts/_tmp_walk/
