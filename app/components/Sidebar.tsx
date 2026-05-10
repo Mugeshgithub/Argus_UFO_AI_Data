@@ -89,47 +89,54 @@ export default function Sidebar({ activeView, onNav, apiKey, onApiKey }: Sidebar
       transform: isMobile ? (mobileOpen ? "translateX(0)" : "translateX(-100%)") : "translateX(0)",
       transition: "transform 0.28s cubic-bezier(0.4,0,0.2,1)",
     }}>
-      {/* Logo */}
-      <button
-        onClick={() => handleNav("landing")}
-        style={{
-          display: "flex", alignItems: "center", gap: 10,
-          padding: "18px 16px 16px",
-          background: "none", border: "none",
-          borderBottom: "1px solid rgba(6,182,212,0.1)",
-          cursor: "pointer", textAlign: "left", width: "100%", flexShrink: 0,
-        }}
-      >
-        <div style={{
-          width: 32, height: 32, borderRadius: "50%",
-          border: "1.5px solid rgba(6,182,212,0.7)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          position: "relative", overflow: "hidden", flexShrink: 0,
-        }}>
+      {/* Logo row */}
+      <div style={{
+        display: "flex", alignItems: "center",
+        borderBottom: "1px solid rgba(6,182,212,0.1)",
+        flexShrink: 0,
+      }}>
+        <button
+          onClick={() => handleNav("landing")}
+          style={{
+            display: "flex", alignItems: "center", gap: 10,
+            padding: "18px 16px 16px",
+            background: "none", border: "none",
+            cursor: "pointer", textAlign: "left", flex: 1,
+          }}
+        >
           <div style={{
-            position: "absolute", inset: 0,
-            background: "conic-gradient(from 0deg, transparent 60%, rgba(6,182,212,0.4) 70%, transparent 80%)",
-            animation: "radar-sweep 4s linear infinite",
-          }} />
-          <div style={{ width: 4, height: 4, borderRadius: "50%", background: "#06b6d4", boxShadow: "0 0 8px #06b6d4" }} />
-        </div>
-        <div>
-          <div style={{ fontSize: 13, fontWeight: 700, color: "#06b6d4", letterSpacing: "0.2em", lineHeight: 1 }}>ARGUS</div>
-          <div style={{ fontSize: 8, color: "rgba(6,182,212,0.5)", letterSpacing: "0.15em", marginTop: 3 }}>UAP INTELLIGENCE</div>
-        </div>
-        {/* Close button on mobile */}
+            width: 32, height: 32, borderRadius: "50%",
+            border: "1.5px solid rgba(6,182,212,0.7)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            position: "relative", overflow: "hidden", flexShrink: 0,
+          }}>
+            <div style={{
+              position: "absolute", inset: 0,
+              background: "conic-gradient(from 0deg, transparent 60%, rgba(6,182,212,0.4) 70%, transparent 80%)",
+              animation: "radar-sweep 4s linear infinite",
+            }} />
+            <div style={{ width: 4, height: 4, borderRadius: "50%", background: "#06b6d4", boxShadow: "0 0 8px #06b6d4" }} />
+          </div>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#06b6d4", letterSpacing: "0.2em", lineHeight: 1 }}>ARGUS</div>
+            <div style={{ fontSize: 8, color: "rgba(6,182,212,0.5)", letterSpacing: "0.15em", marginTop: 3 }}>UAP INTELLIGENCE</div>
+          </div>
+        </button>
+        {/* Close button — sibling, not child of the logo button */}
         {isMobile && (
           <button
-            onClick={(e) => { e.stopPropagation(); setMobileOpen(false) }}
+            onClick={() => setMobileOpen(false)}
             style={{
-              marginLeft: "auto", background: "none", border: "none",
-              color: "#64748b", cursor: "pointer", padding: 4,
+              background: "none", border: "none",
+              color: "#64748b", cursor: "pointer", padding: "0 14px",
+              display: "flex", alignItems: "center",
             }}
+            aria-label="Close menu"
           >
             <X style={{ width: 18, height: 18 }} />
           </button>
         )}
-      </button>
+      </div>
 
       {/* Navigation */}
       <nav style={{ flex: 1, overflowY: "auto", padding: "8px 0", scrollbarWidth: "none" }}>
