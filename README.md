@@ -4,9 +4,9 @@
 
 ARGUS is a full-stack data science platform that analyzes **79,621 declassified sightings** from the National UFO Reporting Center (NUFORC), runs them through an NLP pipeline, and surfaces patterns humans miss at scale — bias corrections, per-capita normalization, behavioral clustering, and credibility scoring included.
 
-**[Live Demo →](https://argus-ufo-ai-data.vercel.app)**
+**[Live Demo →](https://argus-ufo-ai-data.vercel.app)** &nbsp;·&nbsp; **[LinkedIn Post →](https://www.linkedin.com/posts/mugesh-mdeveloper_datascience-ai-python-ugcPost-7459031076347293699-K8T0)** &nbsp;·&nbsp; **[▶ Watch Walkthrough (1m47s)](scripts/argus_walkthrough_v3.mp4)**
 
-[![Watch Walkthrough](scripts/argus_walkthrough_v3.mp4)](https://argus-ufo-ai-data.vercel.app)
+[![ARGUS UAP Intelligence — walkthrough preview](public/argus_preview.gif)](https://argus-ufo-ai-data.vercel.app)
 
 ---
 
