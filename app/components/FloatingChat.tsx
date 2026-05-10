@@ -4,7 +4,7 @@ import { MessageCircle, X, Send, Bot, User, Minimize2 } from "lucide-react"
 
 type Msg = { role: "user" | "assistant"; content: string }
 
-const SYSTEM = `You are SENTINEL — an AI anomaly intelligence analyst specializing in declassified US government UAP (Unidentified Aerial Phenomena) data.
+const SYSTEM = `You are ARGUS — an AI anomaly intelligence analyst specializing in declassified US government UAP (Unidentified Aerial Phenomena) data.
 
 Your knowledge base includes:
 - Pentagon 2021 UAP Preliminary Assessment (144 incidents, 2004–2021)
@@ -45,7 +45,7 @@ export default function FloatingChat({ apiKey }: { apiKey: string }) {
     if (!apiKey) {
       setMessages(m => [...m,
         { role: "user", content: q },
-        { role: "assistant", content: "⚠ API key not configured. Click 'SET API KEY' in the navigation bar to activate SENTINEL." },
+        { role: "assistant", content: "⚠ API key not configured. Click 'SET API KEY' in the navigation bar to activate ARGUS." },
       ])
       if (!open) setUnread(u => u + 1)
       return
@@ -116,7 +116,7 @@ export default function FloatingChat({ apiKey }: { apiKey: string }) {
               <Bot style={{ width: 16, height: 16, color: "#06b6d4" }} />
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#e2e8f0" }}>SENTINEL AI</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#e2e8f0" }}>ARGUS AI</div>
               <div style={{ fontSize: 9, color: "#64748b", letterSpacing: "0.1em" }}>
                 {apiKey ? "ONLINE" : "API KEY REQUIRED"}
               </div>
@@ -144,7 +144,7 @@ export default function FloatingChat({ apiKey }: { apiKey: string }) {
               <div style={{ paddingTop: 20, textAlign: "center" }}>
                 <div style={{ fontSize: 28, marginBottom: 8, opacity: 0.2 }}>⬡</div>
                 <div style={{ fontSize: 12, color: "#64748b", marginBottom: 16 }}>
-                  Ask SENTINEL about any UAP incident
+                  Ask ARGUS about any UAP incident
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                   {QUICK_QUESTIONS.map(q => (

@@ -275,7 +275,7 @@ export default function SourcesSection() {
               }} />
             </div>
             <div>
-              <div style={{ fontSize: 14, fontWeight: 800, color: "#06b6d4", letterSpacing: "0.2em" }}>SENTINEL</div>
+              <div style={{ fontSize: 14, fontWeight: 800, color: "#06b6d4", letterSpacing: "0.2em" }}>ARGUS</div>
               <div style={{ fontSize: 8, color: "rgba(6,182,212,0.4)", letterSpacing: "0.15em" }}>UAP INTELLIGENCE PLATFORM</div>
             </div>
           </div>
@@ -298,7 +298,7 @@ export default function SourcesSection() {
           </div>
 
           <div style={{ fontSize: 9, color: "rgba(100,116,139,0.4)", letterSpacing: "0.15em", marginTop: 8 }}>
-            SENTINEL UAP Intelligence · All data from declassified U.S. government records · {new Date().getFullYear()}
+            ARGUS UAP Intelligence · All data from declassified U.S. government records · {new Date().getFullYear()}
           </div>
         </div>
       </div>

@@ -75,7 +75,7 @@ export default function NavBar({ apiKey, onApiKey }: { apiKey: string; onApiKey:
               <div style={{ width: 4, height: 4, borderRadius: "50%", background: "#06b6d4", boxShadow: "0 0 8px #06b6d4" }} />
             </div>
             <div style={{ textAlign: "left" }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#06b6d4", letterSpacing: "0.2em", lineHeight: 1 }}>SENTINEL</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#06b6d4", letterSpacing: "0.2em", lineHeight: 1 }}>ARGUS</div>
               <div style={{ fontSize: 8, color: "rgba(6,182,212,0.5)", letterSpacing: "0.15em" }}>UAP INTELLIGENCE</div>
             </div>
           </button>

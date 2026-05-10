@@ -4,7 +4,7 @@ import { Send, Bot, User, Zap } from "lucide-react"
 
 type Msg = { role: "user" | "assistant"; content: string }
 
-const SYSTEM = `You are SENTINEL — an AI anomaly intelligence analyst specializing in declassified US government UAP (Unidentified Aerial Phenomena) data.
+const SYSTEM = `You are ARGUS — an AI anomaly intelligence analyst specializing in declassified US government UAP (Unidentified Aerial Phenomena) data.
 
 Your knowledge base includes:
 - Pentagon 2021 UAP Preliminary Assessment (144 incidents, 2004–2021)
@@ -48,7 +48,7 @@ export default function AISection({ apiKey }: { apiKey: string }) {
         role: "user", content: q,
       }, {
         role: "assistant",
-        content: "⚠ SENTINEL requires an API key to process queries. Click 'SET API KEY' in the navigation bar and enter your OpenAI API key to activate the intelligence engine.",
+        content: "⚠ ARGUS requires an API key to process queries. Click 'SET API KEY' in the navigation bar and enter your OpenAI API key to activate the intelligence engine.",
       }])
       setInput("")
       return
@@ -104,7 +104,7 @@ export default function AISection({ apiKey }: { apiKey: string }) {
             <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg, rgba(6,182,212,0.3), transparent)" }} />
           </div>
           <h2 style={{ fontSize: "clamp(22px, 3vw, 36px)", fontWeight: 800, color: "#e2e8f0", letterSpacing: "-0.01em" }}>
-            SENTINEL AI Analyst
+            ARGUS AI Analyst
           </h2>
           <p style={{ color: "#64748b", fontSize: 13, marginTop: 8 }}>
             Query the intelligence engine about any UAP incident, pattern, or government disclosure.
@@ -127,7 +127,7 @@ export default function AISection({ apiKey }: { apiKey: string }) {
             borderRadius: 12,
             padding: "24px",
           }}>
-            {/* Sentinel icon */}
+            {/* Argus icon */}
             <div style={{ marginBottom: 20 }}>
               <div style={{
                 width: 56, height: 56,
@@ -141,7 +141,7 @@ export default function AISection({ apiKey }: { apiKey: string }) {
                 <Bot style={{ width: 24, height: 24, color: "#06b6d4" }} />
               </div>
               <div style={{ fontSize: 15, fontWeight: 800, color: "#e2e8f0", marginBottom: 6 }}>
-                SENTINEL AI
+                ARGUS AI
               </div>
               <div style={{ fontSize: 10, color: "#64748b", letterSpacing: "0.1em", marginBottom: 12 }}>
                 INTELLIGENCE ANALYSIS ENGINE v2.4
@@ -250,7 +250,7 @@ export default function AISection({ apiKey }: { apiKey: string }) {
                 boxShadow: apiKey ? "0 0 8px #00ff88" : "none",
               }} className={apiKey ? "animate-blink" : ""} />
               <span style={{ fontSize: 11, color: "#94a3b8", letterSpacing: "0.15em" }}>
-                {apiKey ? "SENTINEL ONLINE · READY" : "SENTINEL OFFLINE · API KEY REQUIRED"}
+                {apiKey ? "ARGUS ONLINE · READY" : "ARGUS OFFLINE · API KEY REQUIRED"}
               </span>
               <span style={{
                 marginLeft: "auto",
@@ -276,7 +276,7 @@ export default function AISection({ apiKey }: { apiKey: string }) {
                 <div style={{ textAlign: "center", paddingTop: 60 }}>
                   <div style={{ fontSize: 40, marginBottom: 12, opacity: 0.3 }}>⬡</div>
                   <div style={{ fontSize: 13, color: "#64748b", marginBottom: 6 }}>
-                    SENTINEL AI ready for queries.
+                    ARGUS AI ready for queries.
                   </div>
                   <div style={{ fontSize: 11, color: "#475569" }}>
                     Select a suggested question or type your own.

@@ -4,7 +4,7 @@ import { Send, Bot, User } from "lucide-react"
 
 type Msg = { role: "user" | "assistant"; content: string }
 
-const SYSTEM = `You are SENTINEL — an AI anomaly intelligence analyst specializing in declassified US government UAP (Unidentified Aerial Phenomena) data.
+const SYSTEM = `You are ARGUS — an AI anomaly intelligence analyst specializing in declassified US government UAP (Unidentified Aerial Phenomena) data.
 
 Your knowledge base includes:
 - Pentagon 2021 UAP Preliminary Assessment (144 incidents, 2004–2021)
@@ -86,7 +86,7 @@ export default function AIAnalysis({ apiKey }: { apiKey: string }) {
         {messages.length === 0 && (
           <div className="text-center py-6">
             <div className="text-cyan-400/60 text-3xl mb-3">⬡</div>
-            <div className="text-slate-400 text-xs mb-5">SENTINEL AI ready. Ask about any UAP incident or pattern.</div>
+            <div className="text-slate-400 text-xs mb-5">ARGUS AI ready. Ask about any UAP incident or pattern.</div>
             <div className="flex flex-wrap gap-2 justify-center">
               {SUGGESTIONS.map(s => (
                 <button key={s} onClick={() => send(s)}

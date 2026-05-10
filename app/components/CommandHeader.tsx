@@ -25,7 +25,7 @@ export default function CommandHeader({ apiKey, onApiKey }: { apiKey: string, on
             <Shield className="absolute inset-0 m-auto w-4 h-4 text-cyan-400" />
           </div>
           <div>
-            <div className="text-cyan-400 font-bold text-sm tracking-widest glow-text">SENTINEL</div>
+            <div className="text-cyan-400 font-bold text-sm tracking-widest glow-text">ARGUS</div>
             <div className="text-slate-500 text-[10px] tracking-widest">UAP INTELLIGENCE COMMAND</div>
           </div>
         </div>

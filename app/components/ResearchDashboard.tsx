@@ -226,7 +226,7 @@ export default function ResearchDashboard() {
 
   const handleExport = useCallback(() => {
     downloadJSON({ byYear, byShape, byState, byHour, byDur, byCountry, byDecade, byMonth, stats },
-      "sentinel_uap_research_data.json")
+      "argus_uap_research_data.json")
   }, [byYear, byShape, byState, byHour, byDur, byCountry, byDecade, byMonth, stats])
 
   const handleExportCSV = useCallback(() => {
